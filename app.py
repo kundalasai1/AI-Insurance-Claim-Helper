@@ -1,8 +1,9 @@
 import os
 import streamlit as st
-from utils.chatbot import ask_gemini
+from utils.chatbot import ask_gemini, generate_checklist
 from utils.checklist import load_checklist, get_documents
 from utils.document_analyzer import analyze_document
+from utils.database import get_claim_status
 
 # -----------------------------
 # Page Configuration
@@ -41,6 +42,9 @@ with st.sidebar:
 
     if st.button("📜 Chat History", use_container_width=True):
         st.session_state.page = "History"
+
+    if st.button("📋 Claim Status", use_container_width=True):
+        st.session_state.page = "Status"
 
     st.markdown("---")
     st.caption("Version 1.0")
@@ -123,7 +127,95 @@ elif st.session_state.page == "Checklist":
         file_name=f"{claim_type}_Checklist.txt",
         mime="text/plain"
     )
-    
+    # ---------------------------------------
+    # AI Checklist Generator
+    # ---------------------------------------
+
+    st.divider()
+
+    st.subheader("🤖 AI Checklist Generator")
+
+    incident = st.text_area(
+        "Describe your incident",
+        placeholder="Example: My bike met with an accident yesterday.",
+        key="incident_input"
+    )
+
+    if st.button("Generate AI Checklist", key="ai_checklist_btn"):
+
+        if incident.strip():
+
+            with st.spinner("Generating checklist..."):
+
+                result = generate_checklist(incident)
+
+            st.markdown(result)
+
+        else:
+
+            st.warning("Please describe your incident.")
+
+elif st.session_state.page == "Upload":
+
+    st.title("📤 Upload Insurance Documents")
+
+    uploaded_file = st.file_uploader(
+        "Choose a file",
+        type=["pdf", "png", "jpg", "jpeg"]
+    )
+
+    if uploaded_file is not None:
+
+        st.success("File uploaded successfully!")
+
+        st.write("### File Information")
+        st.write(f"**File Name:** {uploaded_file.name}")
+        st.write(f"**File Type:** {uploaded_file.type}")
+        st.write(f"**File Size:** {uploaded_file.size / 1024:.2f} KB")
+
+        os.makedirs("uploads", exist_ok=True)
+
+        save_path = os.path.join("uploads", uploaded_file.name)
+
+        with open(save_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+
+        st.success("File saved successfully!")
+
+        if uploaded_file.type.startswith("image"):
+            st.image(
+                uploaded_file,
+                caption="Uploaded Image",
+                use_container_width=True
+            )
+
+        elif uploaded_file.type == "application/pdf":
+            st.info("PDF uploaded successfully.")
+
+elif st.session_state.page == "Status":
+
+    st.title("📋 Claim Status Checker")
+
+    claim_id = st.text_input(
+        "Enter Claim ID",
+        placeholder="Example: CLM1001"
+    )
+
+    if st.button("Check Status"):
+
+        result = get_claim_status(claim_id)
+
+        if result:
+
+            st.success("Claim Found")
+
+            st.write(f"**Status:** {result['status']}")
+            st.write(f"**Last Updated:** {result['updated']}")
+
+        else:
+
+            st.error("Claim ID not found.")
+
 elif st.session_state.page == "History":
     st.title("📜 Chat History")
     st.write("View previous conversations.")

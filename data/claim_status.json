@@ -1,0 +1,14 @@
+{
+  "CLM1001": {
+    "status": "Under Review",
+    "updated": "2026-07-05"
+  },
+  "CLM1002": {
+    "status": "Approved",
+    "updated": "2026-07-04"
+  },
+  "CLM1003": {
+    "status": "Rejected",
+    "updated": "2026-07-03"
+  }
+}
