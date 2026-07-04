@@ -14,9 +14,17 @@ with open("prompts/system_prompt.txt", "r", encoding="utf-8") as file:
 
 def ask_gemini(question):
     try:
+
+        prompt = f"""
+{SYSTEM_PROMPT}
+
+User Question:
+{question}
+"""
+
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=f"{SYSTEM_PROMPT}\n\nUser Question:\n{question}"
+            contents=prompt
         )
 
         return response.text

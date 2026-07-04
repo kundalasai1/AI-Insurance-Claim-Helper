@@ -74,7 +74,9 @@ elif st.session_state.page == "Assistant":
 
             st.success("AI Response")
 
-            st.write(answer)
+            st.markdown("### 🤖 AI Response")
+
+            st.markdown(answer)
 
 elif st.session_state.page == "Checklist":
 
