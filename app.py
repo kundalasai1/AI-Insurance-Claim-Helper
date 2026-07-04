@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from utils.chatbot import ask_gemini
-from utils.checklist import load_checklist
+from utils.checklist import load_checklist, get_documents
 from utils.document_analyzer import analyze_document
 
 # -----------------------------
@@ -78,63 +78,50 @@ elif st.session_state.page == "Assistant":
 
 elif st.session_state.page == "Checklist":
 
-    st.title("📄 Insurance Document Checklist")
-
-    insurance_data = load_checklist()
-
-    claim_type = st.selectbox(
-        "Select Claim Type",
-        list(insurance_data.keys())
-    )
-
-    st.info(insurance_data[claim_type]["description"])
-
-    if st.button("Generate Checklist"):
-
-        st.success("Required Documents")
-
-        for document in insurance_data[claim_type]["documents"]:
-            st.checkbox(document)
-
-    st.title("📄 Insurance Document Checklist")
+    st.title("📄 Document Checklist Generator")
 
     insurance_data = load_checklist()
 
     claim_type = st.selectbox(
         "Select Claim Type",
         list(insurance_data.keys()),
-         key="claim_type_select"
+        key="claim_type"
     )
 
+    st.info(insurance_data[claim_type]["description"])
 
-elif st.session_state.page == "Upload":
+    if "show_checklist" not in st.session_state:
+        st.session_state.show_checklist = False
 
-    st.title("📤 Upload Claim Documents")
+    if st.button("Generate Checklist", key="generate_btn"):
+        st.session_state.show_checklist = True
 
-    uploaded_file = st.file_uploader(
-        "Upload an image",
-        type=["png", "jpg", "jpeg"]
+    if st.session_state.show_checklist:
+
+        st.success("Required Documents")
+
+        for i, doc in enumerate(insurance_data[claim_type]["documents"]):
+            st.checkbox(
+                doc,
+                key=f"{claim_type}_{i}"
+            )
+    st.divider()
+
+    st.info(
+      f"Total Required Documents: {len(insurance_data[claim_type]['documents'])}"
     )
+    checklist_text = f"Insurance Claim Type: {claim_type}\n\n"
 
-    if uploaded_file:
+    for doc in insurance_data[claim_type]["documents"]:
+        checklist_text += f"☐ {doc}\n"
 
-        st.image(uploaded_file, width=300)
-
-        save_path = os.path.join("uploads", uploaded_file.name)
-
-        with open(save_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-
-        if st.button("Analyze Document"):
-
-            with st.spinner("Analyzing..."):
-
-                result = analyze_document(save_path)
-
-            st.success("Analysis Complete")
-
-            st.write(result)
-
+    st.download_button(
+        label="📥 Download Checklist",
+        data=checklist_text,
+        file_name=f"{claim_type}_Checklist.txt",
+        mime="text/plain"
+    )
+    
 elif st.session_state.page == "History":
     st.title("📜 Chat History")
     st.write("View previous conversations.")
