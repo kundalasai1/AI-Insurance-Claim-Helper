@@ -1,6 +1,8 @@
+import os
 import streamlit as st
 from utils.chatbot import ask_gemini
 from utils.checklist import load_checklist
+from utils.document_analyzer import analyze_document
 
 # -----------------------------
 # Page Configuration
@@ -110,22 +112,28 @@ elif st.session_state.page == "Upload":
     st.title("📤 Upload Claim Documents")
 
     uploaded_file = st.file_uploader(
-        "Choose a document",
-        type=["pdf", "png", "jpg", "jpeg"]
+        "Upload an image",
+        type=["png", "jpg", "jpeg"]
     )
 
-    if uploaded_file is not None:
+    if uploaded_file:
 
-        st.success("File uploaded successfully!")
+        st.image(uploaded_file, width=300)
 
-        st.write("### File Details")
+        save_path = os.path.join("uploads", uploaded_file.name)
 
-        st.write(f"**File Name:** {uploaded_file.name}")
-        st.write(f"**File Type:** {uploaded_file.type}")
-        st.write(f"**File Size:** {uploaded_file.size / 1024:.2f} KB")
+        with open(save_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
 
-        if uploaded_file.type.startswith("image"):
-            st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
+        if st.button("Analyze Document"):
+
+            with st.spinner("Analyzing..."):
+
+                result = analyze_document(save_path)
+
+            st.success("Analysis Complete")
+
+            st.write(result)
 
 elif st.session_state.page == "History":
     st.title("📜 Chat History")
