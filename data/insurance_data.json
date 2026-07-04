@@ -1,0 +1,46 @@
+{
+  "Vehicle Accident": {
+    "description": "Claim insurance for vehicle accidents such as bike or car collisions.",
+    "documents": [
+      "FIR Copy",
+      "Driving License",
+      "Vehicle RC",
+      "Insurance Policy",
+      "Aadhaar Card",
+      "Accident Photos"
+    ]
+  },
+
+  "Health Insurance": {
+    "description": "Claim reimbursement for hospitalization and medical expenses.",
+    "documents": [
+      "Hospital Bills",
+      "Doctor Prescription",
+      "Medical Reports",
+      "Insurance Card",
+      "Aadhaar Card"
+    ]
+  },
+
+  "Life Insurance": {
+    "description": "Claim benefits for life insurance policies.",
+    "documents": [
+      "Death Certificate",
+      "Policy Document",
+      "Nominee ID Proof",
+      "Bank Passbook",
+      "Aadhaar Card"
+    ]
+  },
+
+  "Travel Insurance": {
+    "description": "Claim losses during travel including baggage, delays, or medical emergencies.",
+    "documents": [
+      "Passport",
+      "Flight Ticket",
+      "Travel Policy",
+      "Medical Reports",
+      "Expense Bills"
+    ]
+  }
+}
